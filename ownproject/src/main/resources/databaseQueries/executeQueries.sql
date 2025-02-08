@@ -52,4 +52,14 @@ CREATE TABLE cart (
     FOREIGN KEY (userId) REFERENCES user_type_details(userId)
 );
 
+CREATE TABLE Orders (
+    orderId INT AUTO_INCREMENT PRIMARY KEY,  
+    productId INT,
+    userId INT,
+    ordersStatusId INT,
+    FOREIGN KEY (productId) REFERENCES Product(productId),
+    FOREIGN KEY (userId) REFERENCES UserTypeDetails(userId),
+    FOREIGN KEY (ordersStatusId) REFERENCES OrdersStatus(ordersStatusId)
+);
+
 
