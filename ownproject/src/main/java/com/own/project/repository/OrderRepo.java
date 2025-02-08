@@ -7,6 +7,6 @@ import com.own.project.model.Orders;
 
 
 @Repository
-public interface OrderRepo   extends JpaRepository <Orders, String>{
+public interface OrderRepo   extends JpaRepository <Orders, Integer>{
   
 }
