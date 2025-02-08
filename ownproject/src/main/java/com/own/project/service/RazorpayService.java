@@ -62,7 +62,7 @@ public class RazorpayService {
             Orders orders = new Orders();
             orders.setUser(user);
             orders.setProduct(product);
-            orders.setOrderId(razorpayOrderId);  // Set the orderId received from Razorpay
+          //  orders.setOrderId(razorpayOrderId);  // Set the orderId received from Razorpay
             
             OrdersStatus ordersStatus = new OrdersStatus();
             ordersStatus.setDeliverdStatus("pending");  // Default status
