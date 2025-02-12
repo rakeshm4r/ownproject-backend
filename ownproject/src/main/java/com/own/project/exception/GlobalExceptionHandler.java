@@ -33,6 +33,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
+    @ExceptionHandler(ProductException.class)
+    public ResponseEntity<String> handleProductException(ProductException ex) {
+      log.info("In GlobalExceptionHandler handleProductException()");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(PaymentException.class)
+    public ResponseEntity<String> handlePaymentException(PaymentException ex) {
+      log.info("In GlobalExceptionHandler handlePaymentException()");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
 
     // Handling general exceptions
     @ExceptionHandler(Exception.class)

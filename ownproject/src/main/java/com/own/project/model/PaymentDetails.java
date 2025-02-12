@@ -15,7 +15,7 @@ import lombok.Data;
 
 @Entity
 @Data
-public class Payment {
+public class PaymentDetails {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +23,7 @@ public class Payment {
 
 	private LocalDateTime paymentDate;	
 
-	private int paymentAmount;
+	private double paymentAmount;
 
   private String paymentTypeName;
 
@@ -45,4 +45,13 @@ public class Payment {
   @JoinColumn(name = "productId", referencedColumnName = "productId")
   private Product product;
 
+  private String paymentPaidId;
+
+  private String upiTransactionId;
+  private String bankTransactionId;
+  private String cardId;
+  private String bank;
+  private String method;
+  private String upiId;
+  private String walletBank;
 }

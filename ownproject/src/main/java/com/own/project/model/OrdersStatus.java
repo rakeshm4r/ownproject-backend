@@ -41,7 +41,8 @@ public class OrdersStatus {
 
   @ManyToOne(fetch = FetchType.LAZY) // Lazy loading can be used to load the category only when needed
   @JoinColumn(name = "paymentId", referencedColumnName = "paymentId")
-  private Payment payment;
+  private PaymentDetails payment;
+  
 
   public void setBookedOrderdDate(Instant bookedOrderdDate) {
     this.bookedOrderdDate = bookedOrderdDate;
@@ -64,7 +65,7 @@ public class OrdersStatus {
     }
     // Add 2 days to the bookedOrderdDate and convert it to LocalDateTime
     Instant deliveryDateInstant = bookedOrderdDate.plusSeconds(2 * 24 * 60 * 60); // 2 days in seconds
-    return LocalDateTime.ofInstant(deliveryDateInstant, ZoneOffset.UTC);
+    return LocalDateTime.ofInstant(deliveryDateInstant, ZoneOffset.ofHoursMinutes(5, 30)); //set in IST(+5:30) Time Zone
   }
 
 }

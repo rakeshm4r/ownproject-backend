@@ -34,6 +34,6 @@ public class Orders {
   private OrdersStatus orderStatus;
 
   
-
+  private String razorpayOrderId;
 
 }

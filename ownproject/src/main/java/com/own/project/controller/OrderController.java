@@ -1,6 +1,9 @@
 package com.own.project.controller;
 
-import java.time.Instant;
+
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,23 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.own.project.Config.JwtUtil;
 import com.own.project.dao.OrderDao;
-import com.own.project.dao.OrdersStatusDao;
-import com.own.project.dao.PaymentDao;
-import com.own.project.model.Orders;
-import com.own.project.model.OrdersStatus;
-import com.own.project.model.Payment;
-import com.own.project.model.Product;
-import com.own.project.model.UserTypeDetails;
-import com.own.project.repository.OrdersStatusRepo;
-import com.own.project.repository.PaymentRepo;
-import com.own.project.repository.ProductRepo;
-import com.own.project.repository.UserTypeDetailsRepo;
-
+import com.own.project.dto.OrdersRequest;
+import com.razorpay.RazorpayException;
+import com.razorpay.Order;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
@@ -36,75 +31,39 @@ public class OrderController {
 
   @Autowired private OrderDao orderDao;
 
-  @Autowired private OrdersStatusDao ordersStatusDao;
+  @PostMapping("/createOrder")
+  public ResponseEntity<?> createOrder(@RequestBody OrdersRequest orderRequest, HttpServletRequest request) {
 
-  @Autowired private PaymentDao paymentDao;
+       log.info("In OrderController of createOrder()");
 
-  @Autowired private UserTypeDetailsRepo userRepo;
+        String token = JwtUtil.getTokenFromRequest(request);
 
-  @Autowired private ProductRepo productRepo;
+        if (token == null) {
+            return ResponseEntity.status(401).body("Authorization token missing.");
+        }
 
-  @Autowired private OrdersStatusRepo ordersStatusRepo;
+        // Create the Razorpay order
+        Order razorpayOrder=null;
+        try {
+          razorpayOrder = orderDao.createOrder(orderRequest.getAmount());
+        } catch (RazorpayException e) {
+          
+          e.printStackTrace();
+          return ResponseEntity.status(500).body("Failed to create Razorpay order.");
+        }
+        // Extract razorpayOrderId and amount
+        String razorpayOrderId = razorpayOrder.get("id").toString();
+        int amountInPaise = razorpayOrder.get("amount"); // This returns the amount in paise
+    
+        // Convert amount from paise (integer) to rupees (double)
+        double amountInRupees = amountInPaise / 100.0; // Convert paise to rupees (as a double)
 
-  @Autowired private PaymentRepo paymentRepo;
+        // Create a map for response
+        Map<String, Object> response = new HashMap<>();
+        response.put("razorpayOrderId", razorpayOrderId);
+        response.put("amount", amountInRupees);
 
-
-  @PostMapping("/saveOrder")
-  public ResponseEntity<?> saveOrder(HttpServletRequest request) {
-    log.info("In OrderController of saveOrder()");
-
-    String token = JwtUtil.getTokenFromRequest(request);
-
-    if (token == null) {
-      return ResponseEntity.status(401).body("Authorization token missing.");
+        // Return the response map
+        return ResponseEntity.ok(response);
     }
-
-    Long userId = JwtUtil.getUserIdFromToken(token);
-
-    Long productId=0l;
-
-    Long ordersStatusId=0l;
-
-    Long paymentId=0l;
-    
-    UserTypeDetails user = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found with userId: " + userId));
-
-    Product product = productRepo.findById(productId).orElseThrow(() -> new RuntimeException("Product not found with productId: " + productId));
-
-    OrdersStatus ordersStatus=ordersStatusRepo.findById(ordersStatusId).orElseThrow(() -> new RuntimeException("OrdersStatus not found with ordersStatusId: " + ordersStatusId));
-    
-    Payment payment =paymentRepo.findById(paymentId).orElseThrow(() -> new RuntimeException("Payment not found with paymentId: " + paymentId));
-    
-    Orders orders = new Orders();
-    orders.setUser(user);
-    orders.setProduct(product);
-    orders.setOrderStatus(ordersStatus);   
-
-    orderDao.saveOrders(orders);
-
-    OrdersStatus ordersStatusData = new OrdersStatus();
-    ordersStatusData.setUser(user);
-    ordersStatusData.setProduct(product);
-    ordersStatusData.setPayment(payment);
-    ordersStatusData.setOrders(orders);
-    ordersStatusData.setBookedOrderdDate(Instant.now());
-    ordersStatusData.setDeliverdStatus("pending");
-
-    ordersStatusDao.savOrdersStatus(ordersStatusData);
-
-
-    Payment  paymentData = new Payment();
-    paymentData.setOrderStatus(ordersStatusData);
-    paymentData.setUser(user);
-    paymentData.setProduct(product);
-    paymentData.setOrders(orders);
-    paymentData.setPaymentStatus(null);
-    paymentData.setPaymentAmount(0);
-    paymentData.setPaymentDate(null);
-    paymentData.setPaymentTypeName(null);
-
-    paymentDao.savePayment(paymentData);
-    
-    return null;
-  }
 }
