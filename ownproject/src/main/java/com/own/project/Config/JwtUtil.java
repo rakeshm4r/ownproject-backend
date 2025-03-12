@@ -10,15 +10,18 @@ import java.util.Date;
 import java.util.function.Function;
 
 import javax.crypto.SecretKey;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-@Component 
+@Component
 public class JwtUtil {
 
-  private static String secretKey = "RqxPOuVfHoBA8Uq40MhJvfY6qEHOOWWvg6N9W9vt23s="; // Static key for demonstration
+    private static String secretKey = "RqxPOuVfHoBA8Uq40MhJvfY6qEHOOWWvg6N9W9vt23s="; // Static key for demonstration
 
+    private static final Logger logger = LoggerFactory.getLogger(JwtUtil.class);
 
-   
     private static SecretKey generateKey() {
         byte[] decode = Decoders.BASE64.decode(getSecretKey());
         return Keys.hmacShaKeyFor(decode);
@@ -36,7 +39,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .setSubject(username)
                 .claim("role", role)
-                .claim("userId", userId) 
+                .claim("userId", userId)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 3600000))  // 1 hour expiration time
                 .signWith(generateKey())  // Now, the static method generateKey() can be called
@@ -80,13 +83,13 @@ public class JwtUtil {
         return (username.equals(extractUsername(token)) && !isTokenExpired(token));
     }
 
-     // Utility method to get JWT token from Authorization header
+    // Utility method to get JWT token from Authorization header
     public static String getTokenFromRequest(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
         if (header != null && header.startsWith("Bearer ")) {
-            return header.substring(7);  // Remove "Bearer " part
+            return header.substring(7); // Remove "Bearer " part
         }
-        return null;  // Token is not found
+        return null; // Token is not found
     }
 
     // Utility method to parse JWT token and get claims

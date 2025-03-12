@@ -10,12 +10,14 @@ public class ProductUserDto {
   private String productName;
   private double productPrice;
   private String productImageBase64;
+  private int noOfItems;
 
   public ProductUserDto(Product product) {
       this.productId=product.getProductId();
       this.productName = product.getProductName();
       this.productPrice = product.getProductPrice();
       this.productImageBase64 = product.getProductImageBase64();
+      this.noOfItems = product.getNoOfItems();
   }
 
  
