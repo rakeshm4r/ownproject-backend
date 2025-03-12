@@ -17,9 +17,9 @@ public interface CartRepo extends  JpaRepository<Cart, Long>{
 
   List<Cart> findByUser_UserIdAndCartRemoveStatusNot(Long userId, String cartRemoveStatus);
 
+  Optional<Cart> findByUserAndProduct(UserTypeDetails user, Product product);
 
- Optional<Cart> findByUserAndProduct(UserTypeDetails user, Product product);
-
+  
 
   
 }

@@ -1,6 +1,6 @@
 package com.own.project.model;
 
-
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -12,28 +12,26 @@ import lombok.Data;
 
 @Entity
 @Data
-public class Orders {
+public class OrdersDetails {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int orderId;
 
-
-  @ManyToOne(fetch = FetchType.LAZY)  
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "productId", referencedColumnName = "productId")
   private Product product;
-  
 
-  @ManyToOne(fetch = FetchType.LAZY)  
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "userId", referencedColumnName = "userId")
   private UserTypeDetails user;
 
-
   @ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "ordersStatusId",referencedColumnName = "ordersStatusId")           
+  @JoinColumn(name = "ordersStatusId", referencedColumnName = "ordersStatusId")
   private OrdersStatus orderStatus;
 
-  
   private String razorpayOrderId;
 
+  @Column(unique = true)
+  private String orderNumber;
 }

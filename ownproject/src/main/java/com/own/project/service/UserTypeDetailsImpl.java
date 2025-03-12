@@ -54,7 +54,7 @@ public class UserTypeDetailsImpl implements UserTypeDetailsDao {
   @Override
   public UserTypeDetails saveUser(UserTypeDetails userTypeDetails) {
     log.info("In UserTypeDetailsImpl saveUser()");
-    userTypeDetails.setUserLoginDate(LocalDateTime.now());
+    userTypeDetails.setUserLoginDate(LocalDateTime.now().withNano(0));
     userTypeDetails.setUserStatus("0");
     userTypeDetails.setUserRole("User");
     return userTypeDetailsRepo.save(userTypeDetails);
@@ -122,4 +122,17 @@ public class UserTypeDetailsImpl implements UserTypeDetailsDao {
     return userTypeDetailsRepo.findById(userId).orElse(null);
   }
 
+  public UserTypeDetailsDto mapUserToUserTypeDetailsDto(UserTypeDetails user) {
+    UserTypeDetailsDto userTypeDetailsDto = new UserTypeDetailsDto();
+    userTypeDetailsDto.setUserName(user.getUserName());
+    userTypeDetailsDto.setEmailId(user.getEmailId());
+    userTypeDetailsDto.setMobileNo(user.getMobileNo());
+    userTypeDetailsDto.setAddress(user.getAddress());
+    userTypeDetailsDto.setCity(user.getCity());
+    userTypeDetailsDto.setState(user.getState());
+    userTypeDetailsDto.setPinCode(user.getPinCode());
+    userTypeDetailsDto.setCountry(user.getCountry());
+    return userTypeDetailsDto;
+  }
+  
 }

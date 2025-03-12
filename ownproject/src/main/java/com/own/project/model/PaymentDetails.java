@@ -33,9 +33,9 @@ public class PaymentDetails {
   @JoinColumn(name = "userId", referencedColumnName = "userId")
   private UserTypeDetails user;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "orderId", referencedColumnName = "orderId")
-  private Orders orders;
+  private OrdersDetails orders;
 
   @OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ordersStatusId",referencedColumnName = "ordersStatusId")           
@@ -45,7 +45,7 @@ public class PaymentDetails {
   @JoinColumn(name = "productId", referencedColumnName = "productId")
   private Product product;
 
-  private String paymentPaidId;
+  private String razorpayPaymentId;
 
   private String upiTransactionId;
   private String bankTransactionId;
@@ -54,4 +54,9 @@ public class PaymentDetails {
   private String method;
   private String upiId;
   private String walletBank;
+
+  String card_last_digits ;
+  String cardType ;
+  String card_issuer_bank_name;
+  String card_network ;
 }
