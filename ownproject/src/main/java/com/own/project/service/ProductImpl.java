@@ -72,8 +72,11 @@ public class ProductImpl implements ProductDao {
     if (updatedProductDetails.getNoOfItems() > 0) {
         existingProduct.setNoOfItems(updatedProductDetails.getNoOfItems());
     }
-    if (updatedProductDetails.getProductCategory() != null) {
-        existingProduct.setProductCategory(updatedProductDetails.getProductCategory());
+     // Handle categoryId by fetching the corresponding ProductCategory
+     if (updatedProductDetails.getCategoryId() != null) {
+      ProductCategory category = productCategoryRepo.findById(updatedProductDetails.getCategoryId())
+              .orElseThrow(() -> new IllegalArgumentException("Category not found with ID: " + updatedProductDetails.getCategoryId()));
+      existingProduct.setProductCategory(category);
     }
     if (updatedProductDetails.getProductImage() != null) {
         existingProduct.setProductImage(updatedProductDetails.getProductImage());
