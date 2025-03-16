@@ -11,41 +11,44 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Transient;
 import lombok.Data;
 
 
 @Entity
-@Data
-public class Product {
+    @Data
+    public class Product {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long productId;
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long productId;
 
-    @Column(unique = true)  // Ensures that the productName is unique in the database
-    private String productName;
+        @Column(unique = true)  // Ensures that the productName is unique in the database
+        private String productName;
 
-    private double productPrice;
+        private double productPrice;
 
-    private double discountPrdPrice;
+        private double discountPrdPrice;
 
-    private int noOfItems;
-    
-    @ManyToOne(fetch = FetchType.LAZY)  // Lazy loading can be used to load the category only when needed
-    @JoinColumn(name = "categoryId", referencedColumnName = "categoryId")
-    private ProductCategory productCategory;
+        private int noOfItems;
+        
+        @ManyToOne(fetch = FetchType.LAZY)  // Lazy loading can be used to load the category only when needed
+        @JoinColumn(name = "categoryId", referencedColumnName = "categoryId")
+        private ProductCategory productCategory;
 
-    @Lob
-    @Column(columnDefinition = "BLOB")
-    private byte[] productImage;  // Store image as byte array
+        @Lob
+        @Column(columnDefinition = "BLOB")
+        private byte[] productImage;  // Store image as byte array
 
-    // Additional getter for returning image as Base64
-    public String getProductImageBase64() {
-        if (productImage != null) {
-            return Base64.getEncoder().encodeToString(productImage);  // Convert byte[] to base64
+        // Additional getter for returning image as Base64
+        public String getProductImageBase64() {
+            if (productImage != null) {
+                return Base64.getEncoder().encodeToString(productImage);  // Convert byte[] to base64
+            }
+            return null;  // If no image, return null
         }
-        return null;  // If no image, return null
-    }
 
-   
-}
+        @Transient
+        private Long categoryId;
+    
+    }
