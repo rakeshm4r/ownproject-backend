@@ -53,5 +53,35 @@ public class ProductImpl implements ProductDao {
     return productRepo.findAll();
   }
 
+  // Method to update product details
+  public boolean updateProduct(Long productId, Product updatedProductDetails) {
+    log.info("In ProductImpl updateProduct()");
+    Product existingProduct = productRepo.findById(productId)
+            .orElseThrow(() -> new IllegalArgumentException("Product not found with ID: " + productId));
+
+    // Update the fields if they are not null
+    if (updatedProductDetails.getProductName() != null) {
+        existingProduct.setProductName(updatedProductDetails.getProductName());
+    }
+    if (updatedProductDetails.getProductPrice() != 0) {
+        existingProduct.setProductPrice(updatedProductDetails.getProductPrice());
+    }
+    if (updatedProductDetails.getDiscountPrdPrice() != 0) {
+        existingProduct.setDiscountPrdPrice(updatedProductDetails.getDiscountPrdPrice());
+    }
+    if (updatedProductDetails.getNoOfItems() > 0) {
+        existingProduct.setNoOfItems(updatedProductDetails.getNoOfItems());
+    }
+    if (updatedProductDetails.getProductCategory() != null) {
+        existingProduct.setProductCategory(updatedProductDetails.getProductCategory());
+    }
+    if (updatedProductDetails.getProductImage() != null) {
+        existingProduct.setProductImage(updatedProductDetails.getProductImage());
+    }
+
+    // Save the updated product to the database
+    productRepo.save(existingProduct);
+    return true;
+}
 
 }

@@ -18,4 +18,6 @@ public interface ProductDao {
   public List<ProductCategory> getAllCategories();
 
   public List<Product> getAllProducts();
+
+  public boolean updateProduct(Long productId, Product updatedProductDetails);
 }

@@ -31,6 +31,8 @@ public class OrdersStatus {
     private Long modifiedUserByOrdStatus;
 
     private String reason;
+
+    private int itemsQuantity;
     
     private LocalDateTime modifiedOrderdStatusDate;
 
@@ -49,6 +51,10 @@ public class OrdersStatus {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "paymentId", referencedColumnName = "paymentId")
     private PaymentDetails payment;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "invoiceId", referencedColumnName = "invoiceId")
+    private InvoiceDetails invoiceDetails;
 
     // Method to set bookedOrderdDate directly from LocalDateTime
     public void setBookedOrderdDate(LocalDateTime bookedOrderdDate) {
