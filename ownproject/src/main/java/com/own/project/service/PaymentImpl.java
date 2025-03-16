@@ -62,7 +62,7 @@ public class PaymentImpl implements PaymentDao {
 
     try {
       if (product.getNoOfItems() > 0) {
-        product.setNoOfItems(product.getNoOfItems() - 1); // Reduce the count by 1
+        product.setNoOfItems(product.getNoOfItems() - paymentRequest.getQuantity()); // Reduce the count by 1
         // Save the updated product back to the database (this assumes you're using a repository for saving)
         productRepo.save(product);  // Make sure you have the productRepository injected into this class
         logger.info("Product quantity updated successfully");
@@ -93,6 +93,7 @@ public class PaymentImpl implements PaymentDao {
       ordersStatusData.setDeliverdStatus("confirmed");
       ordersStatusData.setModifiedUserByOrdStatus(user.getUserId());
       ordersStatusData.setModifiedOrderdStatusDate(LocalDateTime.now().withNano(0));
+      ordersStatusData.setItemsQuantity(paymentRequest.getQuantity());
       ordersStatusRepo.save(ordersStatusData);
       logger.info("OrdersStatus saved to database");
 

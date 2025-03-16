@@ -34,14 +34,14 @@ public class JwtUtil {
 
     @SuppressWarnings("deprecation")
     public static String generateToken(String username, String role, Long userId) {
-        System.out.println("Generating token for user: " + username + " with role: " + role);
+        logger.info("Generating token for user: " + username + " with role: " + role);
 
         return Jwts.builder()
                 .setSubject(username)
                 .claim("role", role)
                 .claim("userId", userId)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 3600000))  // 1 hour expiration time
+                .setExpiration(new Date(System.currentTimeMillis() + 86400000))  // 1 day expiration time (24 hours)
                 .signWith(generateKey())  // Now, the static method generateKey() can be called
                 .compact();
     }

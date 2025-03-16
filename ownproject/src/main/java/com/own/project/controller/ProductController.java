@@ -145,4 +145,15 @@ public class ProductController {
 
     }
 
+    @PutMapping("/{productId}")
+    public ResponseEntity<?> updateProduct(@PathVariable Long productId, @RequestBody Product updatedProductDetails) {
+        log.info("In ProductController updateProduct()");
+        boolean isUpdated =  productDao.updateProduct(productId, updatedProductDetails);
+
+        if (isUpdated) {
+            return ResponseEntity.ok(new ApiResponse("Product Details Updated Successfully "));
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to Update Product Details");
+        }       
+    }
 }

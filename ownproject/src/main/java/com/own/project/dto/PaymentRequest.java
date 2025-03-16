@@ -15,5 +15,7 @@ public class PaymentRequest {
 
   private String razorpay_signature;
  
+  
+  private int quantity;
 }
 

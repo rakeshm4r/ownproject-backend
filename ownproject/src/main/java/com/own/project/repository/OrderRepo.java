@@ -15,8 +15,8 @@ public interface OrderRepo   extends JpaRepository <OrdersDetails, Integer>{
    List<OrdersDetails> findByUser(UserTypeDetails user);
 
    @Query("SELECT MAX(CAST(SUBSTRING(o.orderNumber, 10,6) AS int)) FROM OrdersDetails o WHERE o.orderNumber LIKE :orderPrefix%")
-public Integer findMaxOrderNumber(@Param("orderPrefix") String datePrefix);
+   public Integer findMaxOrderNumber(@Param("orderPrefix") String datePrefix);
 
-
+   
 
 }
