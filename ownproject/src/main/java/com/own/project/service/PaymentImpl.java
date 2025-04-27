@@ -1,6 +1,7 @@
 package com.own.project.service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -15,11 +16,13 @@ import com.own.project.dao.PaymentDao;
 import com.own.project.dto.PaymentRequest;
 
 import com.own.project.exception.PaymentException;
+import com.own.project.model.Cart;
 import com.own.project.model.OrdersDetails;
 import com.own.project.model.OrdersStatus;
 import com.own.project.model.PaymentDetails;
 import com.own.project.model.Product;
 import com.own.project.model.UserTypeDetails;
+import com.own.project.repository.CartRepo;
 import com.own.project.repository.OrderRepo;
 import com.own.project.repository.OrdersStatusRepo;
 import com.own.project.repository.PaymentRepo;
@@ -41,6 +44,9 @@ public class PaymentImpl implements PaymentDao {
 
   @Autowired private ProductRepo productRepo;
 
+  @Autowired private CartRepo cartRepo;
+
+
   @Value("${razorpay.key.id}")
   private String razorpayKeyId;
 
@@ -56,23 +62,19 @@ public class PaymentImpl implements PaymentDao {
 
   @Override
   @Transactional
-  public boolean saveOrderPaymentDetails(PaymentRequest paymentRequest, UserTypeDetails user, Product product) {
+  public boolean saveOrderPaymentDetails(PaymentRequest paymentRequest, UserTypeDetails user, Product product, int quantity){
 
     logger.info("In PaymentImpl of saveOrderPaymentDetails()");
 
     try {
-      if (product.getNoOfItems() > 0) {
-        product.setNoOfItems(product.getNoOfItems() - paymentRequest.getQuantity()); // Reduce the count by 1
-        // Save the updated product back to the database (this assumes you're using a repository for saving)
-        productRepo.save(product);  // Make sure you have the productRepository injected into this class
+      if (product.getNoOfItems() >= quantity) {
+        product.setNoOfItems(product.getNoOfItems() - quantity);
+        productRepo.save(product);
         logger.info("Product quantity updated successfully");
-       
     } else {
-        logger.error("No items left in stock for the product");
+        logger.error("Not enough stock available for product {}", product.getProductId());
         return false;
     }
-      
-
       // Save the order in the database
       OrdersDetails orders = new OrdersDetails();
       orders.setUser(user);
@@ -93,7 +95,7 @@ public class PaymentImpl implements PaymentDao {
       ordersStatusData.setDeliverdStatus("confirmed");
       ordersStatusData.setModifiedUserByOrdStatus(user.getUserId());
       ordersStatusData.setModifiedOrderdStatusDate(LocalDateTime.now().withNano(0));
-      ordersStatusData.setItemsQuantity(paymentRequest.getQuantity());
+      ordersStatusData.setItemsQuantity(quantity);
       ordersStatusRepo.save(ordersStatusData);
       logger.info("OrdersStatus saved to database");
 
@@ -234,6 +236,20 @@ public class PaymentImpl implements PaymentDao {
       ordersStatusData.setPayment(savedPaymentData);
       ordersStatusRepo.save(ordersStatusData);
       logger.info("OrdersStatus saved to database with payment");
+
+      //set cart status is inactive
+        Optional<Cart> existingCart = cartRepo.findByUserAndProduct(user, product);
+    
+        if (existingCart.isPresent()) {
+            
+            Cart cart = existingCart.get();
+            cart.setCartRemoveStatus("1");
+            cartRepo.save(cart);
+            
+            logger.info("Removing the Product in the Cart.So, Cart is Updated.");
+            return true; 
+
+        }
 
       return true;
 

@@ -104,4 +104,29 @@ public class CartController {
 
     }
 
+    @PostMapping("/getCartStatus")
+    public boolean getCartStatus(HttpServletRequest request,@RequestBody String productName) {
+        log.info("In CartController of getCartStatus()");
+        String token = JwtUtil.getTokenFromRequest(request);
+
+        if (token == null) {
+            throw new CartException("Authorization token missing.");
+        }
+      
+        Long userId = JwtUtil.getUserIdFromToken(token);
+
+        UserTypeDetails user = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+
+        Product product = productRepo.findByProductName(productName);
+        if (product == null) {
+            throw new RuntimeException("Product not found with name: " + productName);
+        }
+
+        boolean success = cartDao.cartStatus(product, user);
+        if (success) {
+             return true;
+        } else {
+            return false;
+        }
+    }
 }

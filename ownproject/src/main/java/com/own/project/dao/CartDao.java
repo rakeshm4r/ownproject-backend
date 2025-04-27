@@ -16,5 +16,5 @@ public interface CartDao {
 
   public boolean removeProductFromCart(Long cartId);
   
- 
+  public boolean cartStatus(Product product, UserTypeDetails user);
 }

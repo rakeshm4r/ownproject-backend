@@ -36,30 +36,42 @@ public class PaymentController {
 
  // Razorpay Secret Key from application.properties
 
+    
     @PostMapping("/saveOrderPaymentDetails")
     public ResponseEntity<?> saveOrderPaymentDetails(@RequestBody PaymentRequest paymentRequest, HttpServletRequest request) throws RazorpayException {
-
-        log.info("In PaymentController of saveOrderPaymentDetails()");
-        String token = JwtUtil.getTokenFromRequest(request);
-
-        if (token == null) {
-            return ResponseEntity.status(401).body("Authorization token missing.");
+ 
+     log.info("In PaymentController of saveOrderPaymentDetails()");
+     String token = JwtUtil.getTokenFromRequest(request);
+ 
+     if (token == null) {
+         return ResponseEntity.status(401).body("Authorization token missing.");
+     }
+ 
+     Long userId = JwtUtil.getUserIdFromToken(token);
+     UserTypeDetails user = userRepo.findById(userId).orElseThrow(() -> new PaymentException("User not found"));
+ 
+     boolean isSaved = false;
+ 
+    if(paymentRequest.getProducts().size() > 1){
+        for (PaymentRequest.ProductItem productItem : paymentRequest.getProducts()) {
+            Product product = productRepo.findById(productItem.getProductId())
+                    .orElseThrow(() -> new PaymentException("Product not found with ID: " + productItem.getProductId()));
+    
+         if (!paymentDao.saveOrderPaymentDetails(paymentRequest, user, product, productItem.getQuantity())) {
+            isSaved = false;
+             break;  // If any product fails, we break the loop and respond with an error
+         }          
         }
-
-        Long userId = JwtUtil.getUserIdFromToken(token);
-
-        UserTypeDetails user = userRepo.findById(userId).orElseThrow(() -> new PaymentException("User not found"));
-        Product product = productRepo.findById(paymentRequest.getProductId()).orElseThrow(() -> new PaymentException("Product not found"));
-
-        boolean isSaved = paymentDao.saveOrderPaymentDetails(paymentRequest, user, product);
-        
-        if (isSaved) {
-            return ResponseEntity.ok(new ApiResponse("Order Saved Successfully"));
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Failed to save order payment details.");
-            
-        }
+    }else{
+        Product product = productRepo.findById(paymentRequest.getProducts().get(0).getProductId()).orElseThrow(() -> new PaymentException("Product not found"));
+        isSaved = paymentDao.saveOrderPaymentDetails(paymentRequest, user, product,paymentRequest.getProducts().get(0).getQuantity());        
     }
+     if (isSaved) {
+         return ResponseEntity.ok(new ApiResponse("Order Saved Successfully"));
+     } else {
+         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Failed to save order payment details.");
+     }
+ }
 }
 
 

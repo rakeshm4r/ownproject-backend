@@ -77,5 +77,19 @@ public class CartImpl  implements CartDao{
         return false;
     }
 
-   
+    public boolean cartStatus(Product product, UserTypeDetails user) {
+        log.info("In CartImpl of cartStatus()");
+    
+       Optional<Cart> existingCart = cartRepo.findByUserAndProduct(user, product);
+    
+        if (existingCart.isPresent()) {
+            Cart cart = existingCart.get();
+        
+            // Check if the cartRemoveStatus is not indicating it's removed (or if you need a specific status)
+            if (cart.getCartRemoveStatus() == null || !cart.getCartRemoveStatus().equals("1")) {
+                return true;  // Return true if the cart is still active or not removed
+            }
+        } 
+        return false;
+    }
 }

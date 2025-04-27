@@ -16,6 +16,7 @@ public class CartDto {
   private String userName;
   private String cartRemoveStatus;
   private Long cartId;
+  private int noOfItems;
 
 
   public CartDto(Cart cart){
@@ -25,6 +26,7 @@ public class CartDto {
     this.productPrice = cart.getProduct().getProductPrice(); 
     this.cartRemoveStatus = cart.getCartRemoveStatus();
     this.cartId=cart.getCartId();
+    this.noOfItems = cart.getProduct().getNoOfItems();
 }
 
 

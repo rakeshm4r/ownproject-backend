@@ -135,7 +135,7 @@ public class ProductController {
         List<Product> products = productDao.getAllProducts();
 
         List<Product> filteredProducts = products.stream()
-                .filter(product -> product.getProductName().equalsIgnoreCase(productName)) // Case-insensitive match
+                .filter(product -> product.getProductName().trim().equalsIgnoreCase(productName.trim())) // Case-insensitive match
                 .collect(Collectors.toList());
 
         List<ProductUserDto> allProductDataForUsers = filteredProducts.stream()

@@ -9,7 +9,8 @@ public interface PaymentDao {
   
   public PaymentDetails savePayment(PaymentDetails payment);
 
-  public boolean saveOrderPaymentDetails(PaymentRequest paymentRequest, UserTypeDetails user, Product product);
+ // public boolean saveOrderPaymentDetails(PaymentRequest paymentRequest, UserTypeDetails user, Product product);
 
+  public boolean saveOrderPaymentDetails(PaymentRequest paymentRequest, UserTypeDetails user, Product product, int quantity);
 
 }
